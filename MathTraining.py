@@ -11,15 +11,10 @@
 #add number tracking
 #add loop in main so program does not exit after one question
 
-import math
-import string
 import random
 
-#Globals
-#level = 0
-MAX_LEVEL = 7
-MIN_LEVEL = 1
-
+'''help prints the help information.
+   Takes no arguements, returns nothing'''
 def help():
     print(f"Level 1 is adding two numbers less than 10.")
     print(f"Level 2 is adding two numbers less than 100.")
@@ -32,6 +27,7 @@ def help():
     print(f"Level 9 is adding and subtracting multiple numbers less than 1000.")
     print(f"Level 10 is showing addition and multiplying two numbers less than 10.")
 
+'''makeMath takes level [int], and returns answer [int], and question string ansStr[string]'''
 def makeMath(level):# -> tuple[int, list, list]:
     working_nums = 2
     answer = 0
@@ -121,7 +117,7 @@ def makeMath(level):# -> tuple[int, list, list]:
             m.append(random.randint(0,10))
         partialSort(m)
         answer = m[0]
-        for _ in range(0, working_nums-1):
+        for _ in range(1, working_nums):
             if random.randint(0,1) == 0:
                 seq.append("+")
                 answer += m[_]
@@ -138,7 +134,7 @@ def makeMath(level):# -> tuple[int, list, list]:
             m.append(random.randint(0,100))
         partialSort(m)
         answer = m[0]
-        for _ in range(0, working_nums-1):
+        for _ in range(1, working_nums):
             if random.randint(0,1) == 0:
                 seq.append("+")
                 answer += m[_]
@@ -155,7 +151,7 @@ def makeMath(level):# -> tuple[int, list, list]:
             m.append(random.randint(0,1000))
         partialSort(m)
         answer = m[0]
-        for _ in range(0, working_nums-1):
+        for _ in range(1, working_nums):
             if random.randint(0,1) == 0:
                 seq.append("+")
                 answer += m[_]
@@ -171,26 +167,40 @@ def makeMath(level):# -> tuple[int, list, list]:
         for _ in range(0, working_nums):
             m.append(random.randint(0,10))
         answer = m[0] * m[1]
-        # for a in m:
-        #     answer += a
+        seq.append('*')
     
-    #TODO:  move the string creation from main into here, return answer [int], ansStr [string]
+    #Here we is the string creation so we can return answer [int], ansStr [string]
     #for level 10, ansStr should be of the form m[0] * m[1] = m[0] + m[0] + ... = 
-    return answer, m, seq
+    ansStr = ''
+    for _ in range(0,len(seq)):
+        ansStr += f"{m[_]} {seq[_]} "
+    ansStr += f'{m[-1]} = '
+    if level == 10:
+        ansStr += f'{m[0]} + ' * m[1]
+        ansStr =ansStr[:-2] + "= "
 
+    return answer, ansStr
+
+'''fullSort does a full sort of a numerical list
+   Takes a list [int], and returns a reverse sorted list [int]'''
 def fullSort(numList):
     return numList.sort(reversed=True)
 
+'''Partialsort swaps the highest element and the first element'''
 def partialSort(Q):
     #Q[0], Q.index(max(Q)) = Q.index(max(Q)), Q[0]
     a = Q.index(max(Q))
     Q[0], Q[a] = Q[a], Q[0]
     return Q
 
+'''stats is not needed, will be removed in the future'''
 def stats():
     pass
 
 def main() -> int:
+    MAX_LEVEL = 10
+    MIN_LEVEL = 1
+
     level = input(f"Input your starting level (currently supports {MIN_LEVEL} - {MAX_LEVEL} only), h for help, q for quit.")
     try:
         if level.upper() == 'Q':
@@ -205,29 +215,31 @@ def main() -> int:
         print(f"Exception thrown is str{e}")
         return 0
 
-    if (level < 1) or (level > 10):
-        print("Unsupported level")
-    else:
-        answer, problemNumbers, symbols = makeMath(level)
-        ansStr = ''
-        for m in range(0,len(symbols)):
-            ansStr += f"{problemNumbers[m]} {symbols[m]} "
-        ansStr += f'{problemNumbers[-1]} = '
-        inputtedAnswer = input(ansStr)
-
-        if inputtedAnswer.upper() == 'Q':
-            print ("Exiting.")
-            stats()
+    numCorrect = 0
+    while (True):
+        if (level < MIN_LEVEL) or (level > MAX_LEVEL):
+            print("Unsupported level")
             return 0
-        inputtedAnswer = int(inputtedAnswer)
-        if (inputtedAnswer == answer):
-            print ("Correct!")
         else:
-            print (f"The answer I got is {answer}")
+            answer, problemString = makeMath(level)
+            inputtedAnswer = input(problemString)
 
-
-#    while True:
-#        pass
+            if inputtedAnswer.upper() == 'Q':
+                print ("Exiting.")
+                stats()
+                return 0
+            inputtedAnswer = int(inputtedAnswer)
+            if (inputtedAnswer == answer):
+                print ("Correct!")
+                numCorrect += 1
+            else:
+                print (f"The answer I got is {answer}")
+        if numCorrect == 25:  #adjust this number?
+            level += 1
+            print ("25 correct!  Level up!")
+            print (f'Your new level is {level}.  To quit, press q')
+    
+    return 0
 
 if __name__ == "__main__":
     main()
