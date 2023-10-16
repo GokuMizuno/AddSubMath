@@ -5,12 +5,6 @@
 # skip to next level if get 10 right in a row
 # q to quit
 
-#TODO:
-#remove recursion in levels 7-10
-#add multiplication tutorial level 10
-#add number tracking
-#add loop in main so program does not exit after one question
-
 import random
 
 '''help prints the help information.
